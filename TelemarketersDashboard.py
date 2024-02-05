@@ -3,7 +3,7 @@ from dash import html, dcc
 import plotly.express as px
 import pandas as pd
 
-df =  pd.read_excel("C:\\Users\\Carleano Libretto\\Downloads\\2023 Dataset Telemarketeers.xlsx")
+df =  pd.read_excel("2023 Dataset Telemarketeers.xlsx")
 # Data preparation for the treemap of Average Calls per Day
 top_average_calls = df.nlargest(10, 'Average Calls per Day')
 top_conversion = df.nlargest(10, 'Conversion Rate')
