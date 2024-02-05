@@ -14,14 +14,29 @@ top_engagement = df.nlargest(10, 'Engagement with Decision Makers')
 
 
 # Avg Calls per day
-
 fig_avg_calls = px.treemap(top_average_calls,
                            path=[px.Constant("Top 10 Telemarketers"), 'Name'],
                            values='Average Calls per Day',
                            color='Average Calls per Day',
-                           color_continuous_scale='Reds',
+                           color_continuous_scale='greens',  # Consider if this color scheme is the most appropriate
                            title='Top 10 Telemarketers by Average Calls per Day')
-fig_avg_calls.update_layout(coloraxis_colorbar=dict(title="Avg Calls per Day"))
+
+fig_avg_calls.update_layout(
+    margin=dict(t=50, l=25, r=25, b=25),  # Adjust margins to ensure no cutoffs
+    coloraxis_colorbar=dict(
+        title="Avg Calls per Day",
+        thickness=20,
+        len=0.5,
+        yanchor="top",
+        y=0.5
+    ),
+    font=dict(size=12)  # Adjust font size for better readability
+)
+
+fig_avg_calls.update_traces(
+    textinfo="label+value+percent parent",  # Show more info on hover
+    hovertemplate="<b>%{label}</b><br>Average Calls: %{value}<br>Percentage: %{percent parent}<extra></extra>"
+)
 
 
 # Conversion Rate
@@ -29,9 +44,24 @@ fig_conversion = px.treemap(top_conversion,
                             path=[px.Constant("Top 10 Telemarketers"), 'Name'],
                             values='Conversion Rate',
                             color='Conversion Rate',
-                            color_continuous_scale='Reds',
+                            color_continuous_scale='greens',
                             title='Top 10 Telemarketers by Conversion Rate')
-fig_conversion.update_layout(coloraxis_colorbar=dict(title="Conversion Rate"))
+fig_conversion.update_layout(
+    margin=dict(t=50, l=25, r=25, b=25),  # Adjust margins to ensure no cutoffs
+    coloraxis_colorbar=dict(
+        title="Conversion Rate",
+        thickness=20,
+        len=0.5,
+        yanchor="top",
+        y=0.5
+    ),
+    font=dict(size=12)  # Adjust font size for better readability
+)
+fig_conversion.update_traces(
+    textinfo="label+value+percent parent",  # Show more info on hover
+    hovertemplate="<b>%{label}</b><br>Conversion Rate: %{value}<br>Percentage: %{percent parent}<extra></extra>"
+)
+
 
 
 # Engagement with Decision Makers
@@ -39,9 +69,23 @@ fig_engagement = px.treemap(top_engagement,
                             path=[px.Constant("Top 10 Telemarketers"), 'Name'],
                             values='Engagement with Decision Makers',
                             color='Engagement with Decision Makers',
-                            color_continuous_scale='Reds',
+                            color_continuous_scale='greens',
                             title='Top 10 Telemarketers by Engagement with Decision Makers')
-fig_engagement.update_layout(coloraxis_colorbar=dict(title="Engagement with Decision Makers"))
+fig_engagement.update_layout(
+    margin=dict(t=50, l=25, r=25, b=25),  # Adjust margins to ensure no cutoffs
+    coloraxis_colorbar=dict(
+        title="Engagement with Decision Makers",
+        thickness=20,
+        len=0.5,
+        yanchor="top",
+        y=0.5
+    ),
+    font=dict(size=12)  # Adjust font size for better readability
+)
+fig_engagement.update_traces(
+    textinfo="label+value+percent parent",  # Show more info on hover
+    hovertemplate="<b>%{label}</b><br>Engagement with Decision Makers: %{value}<br>Percentage: %{percent parent}<extra></extra>"
+)    
 
 
 # Data preparation for the line chart of Total Daily Calls
@@ -86,7 +130,7 @@ fig_scatter.add_annotation(x=0.9, y=0.1, text="Underrated", showarrow=False,
 # Dynamically added annotations are omitted for clarity
 
 fig_scatter.update_layout(xaxis_title='Real Performance',
-                          yaxis_title='Difference',
+                          yaxis_title='Supervisory Over/Underestimation',
                           legend_title_text='Rating Difference') # If using color coding
 
 
