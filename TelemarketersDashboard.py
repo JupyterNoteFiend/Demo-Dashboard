@@ -3,7 +3,9 @@ from dash import html, dcc
 import plotly.express as px
 import pandas as pd
 
-df =  pd.read_excel("2023 Dataset Telemarketeers.xlsx")
+df =  pd.read_excel("C:\\Users\\Carleano Libretto\\Downloads\\2023 Dataset Telemarketeers.xlsx")
+
+
 # Data preparation for the treemap of Average Calls per Day
 top_average_calls = df.nlargest(10, 'Average Calls per Day')
 top_conversion = df.nlargest(10, 'Conversion Rate')
@@ -57,24 +59,36 @@ fig_line = px.line(daily_totals_df, x='Date', y='Total Calls', markers=True,
                    color_discrete_sequence=["black"])
 fig_line.update_layout(xaxis_title='Date', yaxis_title='Total Calls', showlegend=False)
 
-#make a list of names for the scatter plots where it is F. Name to save space and make it more readable
-df['Name'] = df['Name'].apply(lambda x: x.split()[0][0] + '. ' + x.split()[1])
+# Assuming 'df' and necessary libraries (pandas, plotly.express) are already imported
 
-# Data preparation for the scatterplot
+# Name shortening improved for edge cases
+df['Name'] = df['Name'].apply(lambda x: ". ".join([y[0] if i == 0 else y for i, y in enumerate(x.split())]))
+
+# Data preparation remains the same
 scatter_data = df[['Name', 'Performance Metric', 'Difference']]
-# Scatterplot plotting
-# Assuming 'scatter_data' is prepared as shown
-fig_scatter = px.scatter(scatter_data, x='Performance Metric', y='Difference', color_discrete_sequence=["black"],
-                         title='Performance vs. Supervisor Rating')
-fig_scatter.add_hline(y=0, line_dash="dot", line_color="red",)
-fig_scatter.add_annotation(x=0.1, y=0.9, text="Overrated", showarrow=False, xref="paper", yref="paper", font_color="green",  bordercolor="green", borderwidth=1)
-fig_scatter.add_annotation(x=0.9, y=0.1, text="Underrated", showarrow=False, xref="paper", yref="paper", font_color="red",  bordercolor="red", borderwidth=1)
-# Adding annotations for each point
-for i, row in scatter_data.iterrows():
-    fig_scatter.add_annotation(x=row['Performance Metric'], y=row['Difference'], text=row['Name'],
-                               showarrow=True, arrowhead=1, ax=0, ay=-40)
 
-fig_scatter.update_layout(xaxis_title='Real Performance', yaxis_title='Difference')
+# Improved scatter plot plotting
+fig_scatter = px.scatter(scatter_data, x='Performance Metric', y='Difference',
+                         color='Difference', # Color coding by 'Difference' or another variable could add depth
+                         color_continuous_scale=px.colors.diverging.Tealrose, # Using a diverging color scale for visual appeal
+                         title='Performance vs. Supervisor Rating',
+                         hover_name='Name') # Adding hover information
+
+# Adding a more visible horizontal line
+fig_scatter.add_hline(y=0, line_dash="dot", line_color="blue", line_width=2)
+
+# Modifying annotations for better visibility and avoiding overlap where possible
+fig_scatter.add_annotation(x=0.1, y=0.9, text="Overrated", showarrow=False, 
+                           xref="paper", yref="paper", font_color="red", bgcolor="white")
+fig_scatter.add_annotation(x=0.9, y=0.1, text="Underrated", showarrow=False, 
+                           xref="paper", yref="paper", font_color="green", bgcolor="white")
+
+# Dynamically added annotations are omitted for clarity
+
+fig_scatter.update_layout(xaxis_title='Real Performance',
+                          yaxis_title='Difference',
+                          legend_title_text='Rating Difference') # If using color coding
+
 
 app = dash.Dash(__name__)
 
