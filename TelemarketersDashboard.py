@@ -98,10 +98,27 @@ daily_totals_df = pd.DataFrame({
     'Total Calls': daily_totals.values
 })
 
+# Assuming daily_totals_df is your DataFrame and is already defined
 fig_line = px.line(daily_totals_df, x='Date', y='Total Calls', markers=True,
                    title='Daily Calls 10/25 - 10/31',
-                   color_discrete_sequence=["black"])
-fig_line.update_layout(xaxis_title='Date', yaxis_title='Total Calls', showlegend=False)
+                   color_discrete_sequence=["#007bff"])  # A more vibrant color
+
+# Update layout for better visual appeal
+fig_line.update_layout(
+    xaxis_title='Date',
+    yaxis_title='Total Calls',
+    showlegend=False,
+    title_font=dict(size=22, color='darkblue', family='Arial, sans-serif'),
+    font=dict(family="Courier New, monospace", size=18, color="#7f7f7f"),
+    plot_bgcolor='white',  # Set background color to white for a cleaner look
+    xaxis=dict(showgrid=True, gridwidth=1, gridcolor='lightgray'),
+    yaxis=dict(showgrid=True, gridwidth=1, gridcolor='lightgray'),
+    margin=dict(l=50, r=50, t=50, b=50),  # Adjust margins to prevent cut-offs
+    hovermode='x unified'  # Improve hover info
+)
+
+# Optionally, increase line width and customize marker appearance
+fig_line.update_traces(line=dict(width=3), marker=dict(size=10, opacity=0.8, line=dict(width=2, color='DarkSlateGrey')))
 
 # Assuming 'df' and necessary libraries (pandas, plotly.express) are already imported
 
