@@ -78,6 +78,3 @@ Once the application is running, you will see a message in the terminal indicati
 
 Open a web browser and go to the link provided in the terminal output to view the Telemarketers Dashboard.
 
-## Support
-
-For issues and questions, feel free to contact [repository owner's contact information or issue tracker link].
