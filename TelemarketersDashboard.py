@@ -1,15 +1,23 @@
-import dash
-from dash import html, dcc
+from dash import Dash, dcc, html, Input, Output
+import dash_bootstrap_components as dbc
 import plotly.express as px
 import pandas as pd
 
-df =  pd.read_excel("C:\\Users\\Carleano Libretto\\Downloads\\2023 Dataset Telemarketeers.xlsx")
+# Assuming df is loaded and prepared as per your script
+df = pd.read_excel("C:\\Users\\Carleano Libretto\\Downloads\\2023 Dataset Telemarketeers.xlsx")
 
+# Round numerical columns to 2 decimals
+df['Average Calls per Day'] = df['Average Calls per Day'].round(2)
+df['Conversion Rate'] = (df['Conversion Rate'] ).round(2)  # Assuming conversion rate is decimal and converting to percentage
+df['Engagement with Decision Makers'] = df['Engagement with Decision Makers'].round(2)
+df['Performance Metric'] = df['Performance Metric'].round(2)  # Assuming this needs rounding
 
 # Data preparation for the treemap of Average Calls per Day
 top_average_calls = df.nlargest(10, 'Average Calls per Day')
 top_conversion = df.nlargest(10, 'Conversion Rate')
 top_engagement = df.nlargest(10, 'Engagement with Decision Makers')
+top_performance = df.nlargest(10, 'Performance Metric')
+
 # Theme application
 
 
@@ -34,8 +42,8 @@ fig_avg_calls.update_layout(
 )
 
 fig_avg_calls.update_traces(
-    textinfo="label+value+percent parent",  # Show more info on hover
-    hovertemplate="<b>%{label}</b><br>Average Calls: %{value}<br>Percentage: %{percent parent}<extra></extra>"
+    textinfo="label+value",  # Show more info on hover
+    hovertemplate="<b>%{label}</b><br>Average Calls: %{value}<br><extra></extra>"
 )
 
 
@@ -58,9 +66,10 @@ fig_conversion.update_layout(
     font=dict(size=12)  # Adjust font size for better readability
 )
 fig_conversion.update_traces(
-    textinfo="label+value+percent parent",  # Show more info on hover
-    hovertemplate="<b>%{label}</b><br>Conversion Rate: %{value}<br>Percentage: %{percent parent}<extra></extra>"
+    textinfo="label+value",  # Show more info on hover
+    hovertemplate="<b>%{label}</b><br>Average Calls: %{value}<br><extra></extra>"
 )
+
 
 
 
@@ -83,9 +92,10 @@ fig_engagement.update_layout(
     font=dict(size=12)  # Adjust font size for better readability
 )
 fig_engagement.update_traces(
-    textinfo="label+value+percent parent",  # Show more info on hover
-    hovertemplate="<b>%{label}</b><br>Engagement with Decision Makers: %{value}<br>Percentage: %{percent parent}<extra></extra>"
-)    
+    textinfo="label+value",  # Show more info on hover
+    hovertemplate="<b>%{label}</b><br>Average Calls: %{value}<br><extra></extra>"
+)
+
 
 
 # Data preparation for the line chart of Total Daily Calls
@@ -108,8 +118,6 @@ fig_line.update_layout(
     xaxis_title='Date',
     yaxis_title='Total Calls',
     showlegend=False,
-    title_font=dict(size=22, color='darkblue', family='Arial, sans-serif'),
-    font=dict(family="Courier New, monospace", size=18, color="#7f7f7f"),
     plot_bgcolor='white',  # Set background color to white for a cleaner look
     xaxis=dict(showgrid=True, gridwidth=1, gridcolor='lightgray'),
     yaxis=dict(showgrid=True, gridwidth=1, gridcolor='lightgray'),
@@ -121,9 +129,6 @@ fig_line.update_layout(
 fig_line.update_traces(line=dict(width=3), marker=dict(size=10, opacity=0.8, line=dict(width=2, color='DarkSlateGrey')))
 
 # Assuming 'df' and necessary libraries (pandas, plotly.express) are already imported
-
-# Name shortening improved for edge cases
-df['Name'] = df['Name'].apply(lambda x: ". ".join([y[0] if i == 0 else y for i, y in enumerate(x.split())]))
 
 # Data preparation remains the same
 scatter_data = df[['Name', 'Performance Metric', 'Difference']]
@@ -151,21 +156,61 @@ fig_scatter.update_layout(xaxis_title='Real Performance',
                           legend_title_text='Rating Difference') # If using color coding
 
 
-app = dash.Dash(__name__)
+app = Dash(__name__, external_stylesheets=[dbc.themes.LUX])
+card_content = [
+    dbc.CardHeader("Top Performers", className="text-center", style={"fontSize": 20, "fontFamily": "Arial"}),
+    dbc.CardBody(
+        [
+            html.P(
+                f"1. {df.nlargest(10, 'Performance Metric').iloc[0]['Name']} "
+                f"2. {df.nlargest(10, 'Performance Metric').iloc[1]['Name']} "
+                f"3. {df.nlargest(10, 'Performance Metric').iloc[2]['Name']}",
+                className="card-text text-center",
+                style={"fontSize": 16, "fontFamily": "Verdana"}
+            )
+        ]
+    ),
+]
 
-app.layout = html.Div(
-    children=[
+app.layout = html.Div([
     html.H1('Telemarketer Performance Dashboard', style={'text-align': 'center'}),
-    html.Div([
-        dcc.Graph(id='avg-calls-per-day', figure=fig_avg_calls),
-        dcc.Graph(id='conversion-rate', figure=fig_conversion),
-        dcc.Graph(id='engagement', figure=fig_engagement)
-    ], style={'display': 'flex', 'flex-wrap': 'wrap', 'justify-content': 'center'}),
-    html.Div([
-        dcc.Graph(id='total-daily-calls', figure=fig_line),
-        dcc.Graph(id='performance-scatter', figure=fig_scatter)
-    ], style={'display': 'flex', 'flex-wrap': 'wrap', 'justify-content': 'center'})
-], style={'max-width': '1200px', 'margin': '0 auto'})
+       dbc.Row(
+        dbc.Col(dbc.Card(card_content, color="primary", outline=True), width={"size": 6, "offset": 3}),
+        className="mb-4"
+    ),
+    dcc.Tabs(id='tabs', value='tab-1', children=[
+        dcc.Tab(label='Average Calls per Day', value='tab-1'),
+        dcc.Tab(label='Conversion Rate', value='tab-2'),
+        dcc.Tab(label='Engagement with Decision Makers', value='tab-3'),
+        dcc.Tab(label='Daily Calls Overview', value='tab-4'),
+        dcc.Tab(label='Performance Scatter Analysis', value='tab-5'),
+    ]),
+    html.Div(id='tabs-content')
+])
+
+@app.callback(Output('tabs-content', 'children'),
+              Input('tabs', 'value'))
+def render_content(tab):
+    if tab == 'tab-1':
+        return html.Div([
+            dcc.Graph(id='avg-calls-per-day', figure=fig_avg_calls)
+        ])
+    elif tab == 'tab-2':
+        return html.Div([
+            dcc.Graph(id='conversion-rate', figure=fig_conversion)
+        ])
+    elif tab == 'tab-3':
+        return html.Div([
+            dcc.Graph(id='engagement', figure=fig_engagement)
+        ])
+    elif tab == 'tab-4':
+        return html.Div([
+            dcc.Graph(id='total-daily-calls', figure=fig_line)
+        ])
+    elif tab == 'tab-5':
+        return html.Div([
+            dcc.Graph(id='performance-scatter', figure=fig_scatter)
+        ])
 
 if __name__ == '__main__':
     app.run_server(debug=True)
