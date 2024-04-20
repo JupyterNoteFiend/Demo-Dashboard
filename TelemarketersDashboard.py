@@ -4,7 +4,7 @@ import plotly.express as px
 import pandas as pd
 
 # Assuming df is loaded and prepared as per your script
-df = pd.read_excel("C:\\Users\\Carleano Libretto\\Downloads\\2023 Dataset Telemarketeers.xlsx")
+df = pd.read_excel("2023 Dataset Telemarketeers.xlsx")
 
 # Round numerical columns to 2 decimals
 df['Average Calls per Day'] = df['Average Calls per Day'].round(2)
@@ -157,6 +157,7 @@ fig_scatter.update_layout(xaxis_title='Real Performance',
 
 
 app = Dash(__name__, external_stylesheets=[dbc.themes.LUX])
+server = app.server
 card_content = [
     dbc.CardHeader("Top Performers", className="text-center", style={"fontSize": 20, "fontFamily": "Arial"}),
     dbc.CardBody(
