@@ -1,1 +1,1 @@
-pip install dash plotly pandas
+pip install dash plotly pandas dash_bootstrap_components gunicorn 
